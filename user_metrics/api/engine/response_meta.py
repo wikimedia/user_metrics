@@ -13,11 +13,8 @@ from dateutil.parser import parse as date_parse
 from re import search
 
 from user_metrics.api.engine import DATETIME_STR_FORMAT
-from user_metrics.api.engine.request_meta import REQUEST_VALUE_MAPPING, \
-    ParameterMapping, get_metric_type, get_request_type
-from user_metrics.utils import reverse_dict
-
-REVERSE_GROUP_MAP = reverse_dict(REQUEST_VALUE_MAPPING['group'])
+from user_metrics.api.engine.request_meta import ParameterMapping, \
+    get_metric_type, get_request_type
 
 
 def format_response(request):
@@ -52,14 +49,8 @@ def format_response(request):
     response['time_of_response'] = datetime.now().strftime(DATETIME_STR_FORMAT)
     response['aggregator'] = str(request.aggregator)
     response['metric'] = str(request.metric)
-    response['interval_hours'] = request.interval
-
-    if request.group:
-        response['group'] = REVERSE_GROUP_MAP[int(request.group)]
-    else:
-        # @TODO get access to the metric default for this attribute
-        response['group'] = 'default'
-
+    response['slice_size'] = request.slice
+    response['group'] = request.group
     response['datetime_start'] = date_parse(metric_obj.datetime_start).\
         strftime(DATETIME_STR_FORMAT)
     response['datetime_end'] = date_parse(metric_obj.datetime_end).\
